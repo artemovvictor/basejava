@@ -15,44 +15,67 @@ public class ArrayStorage {
     }
 
     void save(Resume r) {
-        storage[resCount] = r;
-        resCount++;
+        if (resCount == 0) {
+            storage[resCount] = r;
+            resCount++;
+            System.out.println(r.uuid + " добавлено в базу.");
+        }
+        else if (resCount == storage.length) {
+            System.out.println("Отсутствует место в базе. Сохранение невозможно.");
+        }
+        else {
+            for (int i = 0; i < resCount; i++) {
+                if (storage[i].uuid.equals(r.uuid)) {
+                    System.out.println("Резюме " + r.uuid + " уже имеется в базе.");
+                    break;
+                } else {
+                    storage[resCount] = r;
+                    resCount++;
+                    System.out.println(r.uuid + " добавлено в базу.");
+                    break;
+                }
+            }
+        }
+
     }
 
     Resume get(String uuid) {
-        Resume r = null;
             for (int i = 0; i < resCount; i++) {
                 if (storage[i].uuid.equals(uuid)) {
-                    r = storage[i];
-                    break;
-                }
-                else if (i >= resCount-1) {
-                    System.out.println("Резюме в базе отсутствует.");
+                    return storage[i];
                 }
             }
-        return r;
+        System.out.println("Резюме в базе отсутствует.");
+        return null;
     }
 
     void delete(String uuid) {
             for (int i = 0; i < resCount; i++) {
                 if (storage[i].uuid.equals(uuid)) {
-                    storage[i] = null;
-
-                    /* Оптимизация массива сортировкой*/
-                    for (int j = i; j < resCount-1; j++) {
-                        if (storage[j] == null && storage[j + 1] != null) {
-                            storage[j] = storage[j + 1];
-                            storage[j + 1] = null;
-                        }
-                    }
+                    storage[i] = storage[resCount-1];
+                    storage[resCount-1] = null;
                     resCount--;
                     break;
                 }
-                else if (i >= resCount-1) {
+                else if (i == resCount-1) {
                     System.out.println(uuid + " удалить невозможно, в базе отсутствует.");
                 }
             }
+    }
 
+    void update(Resume r) {
+        for (int i = 0; i < resCount; i++) {
+            if (storage[i].uuid.equals(r.uuid)) {
+                storage[i] = r;
+                System.out.println(r.uuid + " Обновлено.");
+                break;
+            }
+            else if (i == resCount-1) {
+                System.out.println(r.uuid + " обновить невозможно.\nПопытка добавления в базу...");
+                save(r);
+                break;
+            }
+        }
     }
 
     /**
