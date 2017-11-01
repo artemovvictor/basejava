@@ -84,11 +84,8 @@ public class ArrayStorage {
     Resume[] getAll() {
         Resume[] notNull = new Resume[resCount];
 
-        for (int i = 0, j = 0; i < resCount; i++) {
-            if (storage[i] != null) {
-                notNull[j] = storage[i];
-                j++;
-            }
+        for (int i = 0; i < resCount; i++) {
+            notNull[i] = storage[i];
         }
         return notNull;
     }
