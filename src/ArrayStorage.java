@@ -8,35 +8,19 @@ public class ArrayStorage {
     private int resCount = 0;
 
     void clear() {
-        for (int i = 0; i < resCount; i++) {
-            storage[i] = null;
-        }
+        Arrays.fill(storage, null);
         resCount = 0;
     }
 
     void save(Resume r) {
-        if (resCount == 0) {
+        if (getIndexUUID(r) == -1 && resCount != storage.length) {
             storage[resCount] = r;
             resCount++;
             System.out.println(r.uuid + " добавлено в базу.");
         }
-        else if (resCount == storage.length) {
-            System.out.println("Отсутствует место в базе. Сохранение невозможно.");
-        }
         else {
-            for (int i = 0; i < resCount; i++) {
-                if (storage[i].uuid.equals(r.uuid)) {
-                    System.out.println("Резюме " + r.uuid + " уже имеется в базе.");
-                    break;
-                } else {
-                    storage[resCount] = r;
-                    resCount++;
-                    System.out.println(r.uuid + " добавлено в базу.");
-                    break;
-                }
-            }
+            System.out.println("Резюме с uuid " + r.uuid + " уже есть в базе, или в базе нет места. Сохранение невозможно.");
         }
-
     }
 
     Resume get(String uuid) {
@@ -50,31 +34,21 @@ public class ArrayStorage {
     }
 
     void delete(String uuid) {
-            for (int i = 0; i < resCount; i++) {
-                if (storage[i].uuid.equals(uuid)) {
-                    storage[i] = storage[resCount-1];
-                    storage[resCount-1] = null;
-                    resCount--;
-                    break;
-                }
-                else if (i == resCount-1) {
-                    System.out.println(uuid + " удалить невозможно, в базе отсутствует.");
-                }
-            }
+        if (getIndexUUID(get(uuid)) == -1) {
+            System.out.println(uuid + " удалить невозможно, в базе отсутствует.");
+        } else {
+            storage[getIndexUUID(get(uuid))] = storage[resCount-1];
+            storage[resCount-1] = null;
+            resCount--;
+        }
     }
 
     void update(Resume r) {
-        for (int i = 0; i < resCount; i++) {
-            if (storage[i].uuid.equals(r.uuid)) {
-                storage[i] = r;
-                System.out.println(r.uuid + " Обновлено.");
-                break;
-            }
-            else if (i == resCount-1) {
-                System.out.println(r.uuid + " обновить невозможно.\nПопытка добавления в базу...");
-                save(r);
-                break;
-            }
+        if (getIndexUUID(r) == -1) {
+            System.out.println("!!!Ошибка обновления, в базе отсутствует!!!");
+        } else {
+            storage[getIndexUUID(r)] = r;
+            System.out.println(r.uuid + " Обновлено.");
         }
     }
 
@@ -84,13 +58,21 @@ public class ArrayStorage {
     Resume[] getAll() {
         Resume[] notNull = new Resume[resCount];
 
-        for (int i = 0; i < resCount; i++) {
-            notNull[i] = storage[i];
-        }
+        System.arraycopy(storage, 0, notNull, 0, resCount);
         return notNull;
     }
 
     int size() {
         return resCount;
+    }
+
+    private int getIndexUUID(Resume r) {
+        int index = -1;
+        for (int i = 0; i < resCount; i++) {
+            if (storage[i].uuid.equals(r.uuid)) {
+                return i;
+            }
+        }
+        return index;
     }
 }
