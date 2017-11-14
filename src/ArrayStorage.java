@@ -3,10 +3,7 @@ import java.util.Arrays;
 /**
  * Array based storage for Resumes
  */
-public class ArrayStorage implements Storage {
-    private static final int STORAGE_LIMIT = 10000;
-    private Resume[] storage = new Resume[STORAGE_LIMIT];
-    private int size = 0;
+public class ArrayStorage extends AbstractArrayStorage {
 
     public void clear() {
         Arrays.fill(storage, 0, size, null);
@@ -14,10 +11,11 @@ public class ArrayStorage implements Storage {
     }
 
     public void save(Resume r) {
+        int index= getIndex(r.getUuid());
         if (size >= STORAGE_LIMIT) {
             System.out.println("Сохранить невозможно! Нет свободного места.");
         }
-        else if (getIndex(r.getUuid()) != -1){
+        else if (index != -1){
             System.out.println("Резюме с uuid " + r.getUuid() + " уже есть в базе! Сохранить невозможно.");
         }
         else {
@@ -28,31 +26,31 @@ public class ArrayStorage implements Storage {
     }
 
     public Resume get(String uuid) {
-        int i = getIndex(uuid);
-        if (i == -1) {
+        int index= getIndex(uuid);
+        if (index == -1) {
             System.out.println("Резюме в базе отсутствует.");
             return null;
         }
-        return storage[i];
+        return storage[index];
     }
 
     public void delete(String uuid) {
-        int i = getIndex(uuid);
-        if (i == -1) {
+        int index= getIndex(uuid);
+        if (index == -1) {
             System.out.println(uuid + " удалить невозможно, в базе отсутствует.");
         } else {
-            storage[i] = storage[size-1];
+            storage[index] = storage[size-1];
             storage[size-1] = null;
             size--;
         }
     }
 
     public void update(Resume r) {
-        int i = getIndex(r.getUuid());
-        if (i == -1) {
+        int index= getIndex(r.getUuid());
+        if (index == -1) {
             System.out.println("!!!Ошибка обновления, в базе отсутствует!!!");
         } else {
-            storage[i] = r;
+            storage[index] = r;
             System.out.println(r.getUuid() + " Обновлено.");
         }
     }
@@ -62,10 +60,6 @@ public class ArrayStorage implements Storage {
      */
     public Resume[] getAll() {
         return Arrays.copyOfRange(storage, 0, size);
-    }
-
-    public int size() {
-        return size;
     }
 
     private int getIndex(String uuid) {
