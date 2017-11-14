@@ -3,76 +3,77 @@ import java.util.Arrays;
 /**
  * Array based storage for Resumes
  */
-public class ArrayStorage {
-    private Resume[] storage = new Resume[10000];
-    private int resCount = 0;
+public class ArrayStorage implements Storage {
+    private static final int STORAGE_LIMIT = 10000;
+    private Resume[] storage = new Resume[STORAGE_LIMIT];
+    private int size = 0;
 
-    void clear() {
-        Arrays.fill(storage, 0, resCount,null);
-        resCount = 0;
+    public void clear() {
+        Arrays.fill(storage, 0, size, null);
+        size = 0;
     }
 
-    void save(Resume r) {
-        if (getIndexUUID(r) == -1 && resCount != storage.length) {
-            storage[resCount] = r;
-            resCount++;
-            System.out.println(r.uuid + " добавлено в базу.");
+    public void save(Resume r) {
+        if (size >= STORAGE_LIMIT) {
+            System.out.println("Сохранить невозможно! Нет свободного места.");
+        }
+        else if (getIndex(r.getUuid()) != -1){
+            System.out.println("Резюме с uuid " + r.getUuid() + " уже есть в базе! Сохранить невозможно.");
         }
         else {
-            System.out.println("Резюме с uuid " + r.uuid + " уже есть в базе, или в базе нет места. Сохранение невозможно.");
+            storage[size] = r;
+            size++;
+            System.out.println(r.getUuid() + " добавлено в базу.");
         }
     }
 
-    Resume get(String uuid) {
-            for (int i = 0; i < resCount; i++) {
-                if (storage[i].uuid.equals(uuid)) {
-                    return storage[i];
-                }
-            }
-        System.out.println("Резюме в базе отсутствует.");
-        return null;
+    public Resume get(String uuid) {
+        int i = getIndex(uuid);
+        if (i == -1) {
+            System.out.println("Резюме в базе отсутствует.");
+            return null;
+        }
+        return storage[i];
     }
 
-    void delete(String uuid) {
-        if (getIndexUUID(get(uuid)) == -1) {
+    public void delete(String uuid) {
+        int i = getIndex(uuid);
+        if (i == -1) {
             System.out.println(uuid + " удалить невозможно, в базе отсутствует.");
         } else {
-            storage[getIndexUUID(get(uuid))] = storage[resCount-1];
-            storage[resCount-1] = null;
-            resCount--;
+            storage[i] = storage[size-1];
+            storage[size-1] = null;
+            size--;
         }
     }
 
-    void update(Resume r) {
-        if (getIndexUUID(r) == -1) {
+    public void update(Resume r) {
+        int i = getIndex(r.getUuid());
+        if (i == -1) {
             System.out.println("!!!Ошибка обновления, в базе отсутствует!!!");
         } else {
-            storage[getIndexUUID(r)] = r;
-            System.out.println(r.uuid + " Обновлено.");
+            storage[i] = r;
+            System.out.println(r.getUuid() + " Обновлено.");
         }
     }
 
     /**
      * @return array, contains only Resumes in storage (without null)
      */
-    Resume[] getAll() {
-        Resume[] notNull = new Resume[resCount];
-
-        System.arraycopy(storage, 0, notNull, 0, resCount);
-        return notNull;
+    public Resume[] getAll() {
+        return Arrays.copyOfRange(storage, 0, size);
     }
 
-    int size() {
-        return resCount;
+    public int size() {
+        return size;
     }
 
-    private int getIndexUUID(Resume r) {
-        int index = -1;
-        for (int i = 0; i < resCount; i++) {
-            if (storage[i].uuid.equals(r.uuid)) {
+    private int getIndex(String uuid) {
+        for (int i = 0; i < size; i++) {
+            if (storage[i].getUuid().equals(uuid)) {
                 return i;
             }
         }
-        return index;
+        return -1;
     }
 }

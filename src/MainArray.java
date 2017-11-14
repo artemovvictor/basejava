@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
  * Test for com.urise.webapp.storage.ArrayStorage
  */
 public class MainArray {
-    private final static ArrayStorage ARRAY_STORAGE = new ArrayStorage();
+    private final static Storage ARRAY_STORAGE = new ArrayStorage();
 
     public static void main(String[] args) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -31,7 +31,7 @@ public class MainArray {
                     break;
                 case "save":
                     r = new Resume();
-                    r.uuid = uuid;
+                    r.setUUID(uuid);
                     ARRAY_STORAGE.save(r);
                     printAll();
                     break;
@@ -40,11 +40,8 @@ public class MainArray {
                     printAll();
                     break;
                 case "update":
-                    r = ARRAY_STORAGE.get(uuid);
-                    if (r == null) {
-                        r = new Resume();
-                        r.uuid = uuid;
-                    }
+                    r = new Resume();
+                    r.setUUID(uuid);
                     ARRAY_STORAGE.update(r);
                     printAll();
                     break;
