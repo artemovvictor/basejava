@@ -6,7 +6,7 @@ public class Resume {
     // Unique identifier
     private String uuid;
 
-    public void setUUID(String uuid) {
+    public void setUuid(String uuid) {
         this.uuid = uuid;
     }
 
