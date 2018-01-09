@@ -1,12 +1,18 @@
+import java.util.UUID;
+
 /**
  * com.urise.webapp.model.Resume class
  */
 public class Resume implements Comparable<Resume> {
 
     // Unique identifier
-    private String uuid;
+    private final String uuid;
 
-    public void setUuid(String uuid) {
+    public Resume() {
+        this(UUID.randomUUID().toString());
+    }
+
+    public Resume(String uuid) {
         this.uuid = uuid;
     }
 
